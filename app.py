@@ -3,11 +3,16 @@ import pickle
 import numpy as np
 import pandas as pd
 
-# streamlit run app.py
-
 # ----------------- Load Model and Data -----------------
 pipe = pickle.load(open('pipe.pkl', 'rb'))
 df = pickle.load(open('df.pkl', 'rb'))
+
+# 🛠 Fix: Agar XGBModel ke andar gpu_id attribute hai to usse hata do
+try:
+    if hasattr(pipe.named_steps['xgbmodel'], 'gpu_id'):
+        pipe.named_steps['xgbmodel'].gpu_id = None
+except Exception:
+    pass
 
 # ----------------- Page Configuration -----------------
 st.set_page_config(
@@ -70,8 +75,8 @@ with col1:
 with col2:
     screen_size = st.number_input('Screen Size (inches)', min_value=10.0, max_value=20.0, step=0.1)
     resolution = st.selectbox(
-        'Screen Resolution', 
-        ['1920x1080', '1366x768', '1600x900', '3840x2160', 
+        'Screen Resolution',
+        ['1920x1080', '1366x768', '1600x900', '3840x2160',
          '2560x1600', '2736x1824', '2560x1440']
     )
     cpu = st.selectbox('CPU Brand', sorted(df['Cpu brand'].unique()))
